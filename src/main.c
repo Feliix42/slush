@@ -23,7 +23,7 @@ int main(void) {
 
 		// TODO: Cut the \n that might exists at the end of the input string
 
-		printf("Received: %s\n", input)
+		printf("Received: %s\n", input);
 	}
 
 	printf("exit\n");
