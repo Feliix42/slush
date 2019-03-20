@@ -8,7 +8,10 @@ int main(void) {
 
 	char* input = calloc(MAX_CMD_LENGTH + 1, sizeof(char));
 
-	while (true) {
+	yyparse();
+
+
+	/* while (true) {
 		char* user = getenv("USER");
 
 		if (user) {
@@ -25,6 +28,7 @@ int main(void) {
 
 		printf("Received: %s\n", input);
 	}
+	*/
 
 	printf("exit\n");
 	return 0;

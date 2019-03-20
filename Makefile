@@ -1,12 +1,14 @@
 CC	:= gcc
-CFLAGS	:= -Wpedantic -Wall -Wextra # -Werror
+YACC	:= bison
+LEX	:= flex
+CFLAGS	:= -std=c11 -Wpedantic -Wall -Wextra # -Werror
 LDFLAGS	:= -ll
 BUILD	:= ./build
 OBJ_DIR	:= $(BUILD)/objects
 APP_DIR := $(BUILD)/apps
 TARGET	:= slush
 INCLUDE	:= -Iinclude/
-SRC		:= $(wildcard src/*.c)
+SRC	:= $(wildcard src/*.c)
 
 OBJECTS	:= $(SRC:%.c=$(OBJ_DIR)/%.o)
 
@@ -17,16 +19,18 @@ run: all
 	$(APP_DIR)/$(TARGET)
 
 flex:
-	flex --outfile=src/scanner.c --header-file=include/scanner.h src/scanner.l
+	$(LEX) --outfile=src/scanner.c --header-file=include/scanner.h src/scanner.l
 
 bison:
-	bison --output=src/parser.c --defines=include/parser.h src/parser.y
+	$(YACC) --output=src/parser.c --defines=include/parser.h src/parser.y
+
+generate: flex bison
 
 $(OBJ_DIR)/%.o: %.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(INCLUDE) -o $@ -c $<
 
-$(APP_DIR)/$(TARGET): flex bison $(OBJECTS)
+$(APP_DIR)/$(TARGET): $(YFILES) $(LFILES) $(OBJECTS)
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(INCLUDE) $(LDFLAGS) -o $(APP_DIR)/$(TARGET) $(OBJECTS)
 
