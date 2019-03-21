@@ -2,16 +2,37 @@
 
 #define MAX_CMD_LENGTH 300
 
+struct command** parse_command(const char* expr) {
+	yyscan_t scanner;
+	YY_BUFFER_STATE state;
+	struct command** cmd = calloc(1, sizeof(struct command*));
+
+	if (yylex_init(&scanner)) {
+		fprintf(stderr, "Could not initialize scanner!\n");
+		return NULL;
+	}
+
+	state = yy_scan_string(expr, scanner);
+
+	if (yyparse(cmd, scanner)) {
+		// error during parse occured
+		fprintf(stderr, "Could not parse input.\n");
+		return NULL;
+	}
+
+	yy_delete_buffer(state, scanner);
+	yylex_destroy(scanner);
+
+	return cmd;
+}
+
 // int main(int argc, char **argv) {
 int main(void) {
 	printf("Welcome to slush - the stupid & lightly underwhelming shell!\n");
 
 	char* input = calloc(MAX_CMD_LENGTH + 1, sizeof(char));
 
-	yyparse();
-
-
-	/* while (true) {
+	while (true) {
 		char* user = getenv("USER");
 
 		if (user) {
@@ -24,11 +45,16 @@ int main(void) {
 		if (!fgets(input, MAX_CMD_LENGTH + 1, stdin))
 			break;
 
-		// TODO: Cut the \n that might exists at the end of the input string
+		struct command** cmd = parse_command(input);
 
-		printf("Received: %s\n", input);
+		if (!cmd) {
+			fprintf(stderr, "Quitting due to error\n");
+			return 1;
+		}
+
+		//handle_command(*cmd);
+
 	}
-	*/
 
 	printf("exit\n");
 	return 0;

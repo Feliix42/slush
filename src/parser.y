@@ -1,27 +1,45 @@
+// structure:
+// command <args> [< input_redirect] (| command <args>)* [> output_redirect] [&]
+// TODO: builtin befehle als enum anstatt command?
 %{
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <command.h>
+#include <parser.h>
+#include <scanner.h>
 
-int yylex(void);
 
-void yyerror(const char* msg) {
-	// TODO: Can this be improved for better error handling?
-	fprintf(stderr, "%s\n", msg);
+int yyerror(struct command** commands, yyscan_t scanner, const char *msg) {
+	fprintf(stderr, "Error: %s\n", msg);
 }
+
 %}
 
-%union {
-       char *string;
+%code requires {
+	typedef void* yyscan_t;
 }
 
+// define a reentrant parser
+%define parse.error verbose
+%define api.pure
+%lex-param   { yyscan_t scanner }
+%parse-param { struct command** commands }
+%parse-param { yyscan_t scanner }
+
+
+%union {
+	char *string;
+}
 
 %start cmd_line
-%token <string> EXIT PIPE INPUT_REDIR OUTPUT_REDIR STRING NL BACKGROUND
+%token EXIT BACKGROUND
+%token <string> PIPE INPUT_REDIR OUTPUT_REDIR STRING
 
 
 %%
 cmd_line    :
-        | EXIT             { }
+        | EXIT             { printf("byebye\n"); }
         | pipeline back_ground
         ;
 

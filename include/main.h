@@ -5,7 +5,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include <command.h>
 #include <parser.h>
 #include <scanner.h>
+
 
 #endif
