@@ -2,10 +2,15 @@
 
 #define MAX_CMD_LENGTH 300
 
-struct command** parse_command(const char* expr) {
+struct command* parse_command(const char* expr) {
 	yyscan_t scanner;
 	YY_BUFFER_STATE state;
-	struct command** cmd = calloc(1, sizeof(struct command*));
+	struct command* cmd = calloc(1, sizeof(struct command*));
+
+	if (!cmd) {
+		fprintf(stderr, "Could not allocate memory!\n");
+		return NULL;
+	}
 
 	if (yylex_init(&scanner)) {
 		fprintf(stderr, "Could not initialize scanner!\n");
@@ -45,7 +50,7 @@ int main(void) {
 		if (!fgets(input, MAX_CMD_LENGTH + 1, stdin))
 			break;
 
-		struct command** cmd = parse_command(input);
+		struct command* cmd = parse_command(input);
 
 		if (!cmd) {
 			fprintf(stderr, "Quitting due to error\n");

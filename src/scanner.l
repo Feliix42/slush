@@ -1,5 +1,6 @@
 %{
 #include <string.h>
+#include <command.h>
 #include <parser.h>
 
 #ifdef DOESNT_HAVE_STRDUP
