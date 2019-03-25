@@ -61,7 +61,7 @@ int add_argument(struct command* cmd, char* argument) {
 			len++;
 		}
 
-		cur->args = realloc(cur->args, (len + 1) * sizeof(char*));
+		cur->args = realloc(cur->args, (len + 2) * sizeof(char*));
 		if (!cur->args) {
 			fprintf(stderr, "Could not allocate memory\n");
 			return 0;

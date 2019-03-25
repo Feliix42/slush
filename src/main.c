@@ -5,7 +5,7 @@
 struct command* parse_command(const char* expr) {
 	yyscan_t scanner;
 	YY_BUFFER_STATE state;
-	struct command* cmd = calloc(1, sizeof(struct command*));
+	struct command* cmd = calloc(1, sizeof(struct command));
 
 	if (!cmd) {
 		fprintf(stderr, "Could not allocate memory!\n");
@@ -52,9 +52,16 @@ int main(void) {
 
 		struct command* cmd = parse_command(input);
 
+		// TODO: Don't die on parse errors, provide better error handling instead!
+
 		if (!cmd) {
 			fprintf(stderr, "Quitting due to error\n");
 			return 1;
+		}
+
+		if (!cmd->invocation) {
+			// exit condition
+			break;
 		}
 
 		//handle_command(*cmd);
