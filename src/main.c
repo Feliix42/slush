@@ -64,8 +64,8 @@ int main(void) {
 			break;
 		}
 
-		//handle_command(*cmd);
-
+		// TODO: Match return value of command
+		handle_command(cmd);
 	}
 
 	printf("exit\n");

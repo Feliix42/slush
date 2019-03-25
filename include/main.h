@@ -8,6 +8,6 @@
 #include <command.h>
 #include <parser.h>
 #include <scanner.h>
-
+#include <handler.h>
 
 #endif
