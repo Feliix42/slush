@@ -2,8 +2,9 @@
 #define HANDLER_H
 
 #include <command.h>
+#include <environment.h>
 
-int handle_command(struct command* cmd);
+int handle_command(struct command* cmd, struct environment* env);
 
 
 #endif

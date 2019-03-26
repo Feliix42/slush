@@ -1,6 +1,6 @@
 #include <main.h>
 
-#define MAX_CMD_LENGTH 300
+#define MAX_CMD_LENGTH 400
 
 struct command* parse_command(const char* expr) {
 	yyscan_t scanner;
@@ -31,19 +31,25 @@ struct command* parse_command(const char* expr) {
 	return cmd;
 }
 
-// int main(int argc, char **argv) {
 int main(void) {
 	printf("Welcome to slush - the stupid & lightly underwhelming shell!\n");
 
 	char* input = calloc(MAX_CMD_LENGTH + 1, sizeof(char));
+	// initialize the environment variable
+	struct environment* env = initialize_env();
+
+	if (!input || !env) {
+		fprintf(stderr, "Failed to allocate memory\n");
+		return 1;
+	}
 
 	while (true) {
 		char* user = getenv("USER");
 
 		if (user) {
-			printf("[%s: slush] ", user);
+			printf("[%s: slush] %s ", user, env->cwd);
 		} else {
-			printf("[slush] ");
+			printf("[slush] %s ", env->cwd);
 		}
 
 		// get input
@@ -65,7 +71,7 @@ int main(void) {
 		}
 
 		// TODO: Match return value of command
-		handle_command(cmd);
+		handle_command(cmd, env);
 	}
 
 	printf("exit\n");

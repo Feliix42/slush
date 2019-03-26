@@ -9,5 +9,6 @@
 #include <parser.h>
 #include <scanner.h>
 #include <handler.h>
+#include <environment.h>
 
 #endif
