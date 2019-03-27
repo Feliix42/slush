@@ -18,11 +18,31 @@ int handle_command(struct command* cmd, struct environment* env) {
 	}
 
 	if (pid == 0) {
+		// child
+
+		// DEBUG
 		for (int i = 0; cmd->invocation->args[i] != NULL; i++) {
 			printf("%s ", cmd->invocation->args[i]);
 		}
 		printf("\n");
 
+		if (cmd->input_redir) {
+			close(STDIN_FILENO);
+			if (openat(STDIN_FILENO, cmd->input_redir, O_RDONLY) == -1) {
+				fprintf(stderr, "Unable to open STDIN file. Errno %d\n", errno);
+				exit(1);
+			}
+		}
+
+		if (cmd->output_redir) {
+			close(STDOUT_FILENO);
+			if (openat(STDOUT_FILENO, cmd->output_redir, O_WRONLY | O_CREAT) == -1) {
+				fprintf(stderr, "Unable to open STDOUT file. Errno %d\n", errno);
+				exit(1);
+			}
+		}
+
+		// run execve to start the program
 		if (execve(prog, cmd->invocation->args, environ) == -1) {
 			// TODO: maybe(!) err handling
 			fprintf(stderr, "Failed to execute %s (errno %d)\n", prog, errno);
