@@ -48,17 +48,20 @@ back_ground
         ;
 
 command
-	: command STRING	{ if (!add_argument(command, yyval.string)) return 0; }
-        | STRING		{ if (!append_invocation(command, yyval.string)) return 0; }
+	: command STRING	{ if (!add_argument(command, $2)) return 0; }
+	| STRING		{
+			if (!append_invocation(command, $1)) return 0;
+			if (!add_argument(command, $1)) return 0;
+		}
         ;
 
 output_redir
-	: OUTPUT_REDIR STRING	{ command->output_redir = yyval.string; }
+	: OUTPUT_REDIR STRING	{ command->output_redir = $2; }
         | 			{ /* nothing to be done */ }
         ;
 
 input_redir
-	: INPUT_REDIR STRING	{ command->input_redir = yyval.string; }
+	: INPUT_REDIR STRING	{ command->input_redir = $2; }
         |			{ /* nothing to be done */ }
         ;
 

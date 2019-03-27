@@ -22,6 +22,7 @@ struct environment* initialize_env() {
 	char* env_path = getenv("PATH");
 
 	if (env_path) {
+		printf("PATH: %s\n", env_path);
 		// count no of paths in the path variable for allocation
 		int path_elems = 1;
 		for (unsigned long i = 0; i < strlen(env_path); i++) {
@@ -42,6 +43,8 @@ struct environment* initialize_env() {
 			j++;
 			token = strtok(NULL, ":");
 		}
+
+		env->path = path;
 	}
 
 	return env;
@@ -63,10 +66,14 @@ char* find_executable(struct environment* env, char* program) {
 	// iteratively check for every path + program combination and return immediately if it exists
 	for (int i = 0; env->path[i] != NULL; i++) {
 		strcpy(abspath, env->path[i]);
+		if (abspath[strlen(abspath) - 1] != '/') {
+			strcat(abspath, "/");
+		}
+
 		strcat(abspath, program);
 
 		struct stat buffer;
-		if (!stat(abspath, &buffer)) {
+		if (stat(abspath, &buffer)) {
 			continue;
 		}
 
