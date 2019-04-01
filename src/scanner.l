@@ -29,7 +29,7 @@ SPACE           [\032]
 exit            { return EXIT; }
 {NL}            { return 0; }
 {BG}            { return BACKGROUND; }
-{PIPE}          { return PIPE;}
+{PIPE}          { return PIPE; }
 {OUTPUT_REDIR}  { return OUTPUT_REDIR; }
 {INPUT_REDIR}   { return INPUT_REDIR; }
 {CHAR}+         { yylval->string = strdup(yytext); return STRING; }

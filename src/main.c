@@ -20,8 +20,8 @@ struct command* parse_command(const char* expr) {
 	state = yy_scan_string(expr, scanner);
 
 	if (yyparse(cmd, scanner)) {
+		// TODO: Error handling https://www.gnu.org/software/bison/manual/html_node/Parser-Function.html
 		// error during parse occured
-		fprintf(stderr, "Could not parse input.\n");
 		return NULL;
 	}
 
@@ -34,36 +34,41 @@ struct command* parse_command(const char* expr) {
 int main(void) {
 	printf("Welcome to slush - the stupid & lightly underwhelming shell!\n");
 
-	char* input = calloc(MAX_CMD_LENGTH + 1, sizeof(char));
+	char* input = NULL;
+	size_t linecap = 0;
 	// initialize the environment variable
 	struct environment* env = initialize_env();
 
-	if (!input || !env) {
+	if (!env) {
 		fprintf(stderr, "Failed to allocate memory\n");
 		return 1;
 	}
 
 	while (true) {
-		char* user = getenv("USER");
+		// check status of any background tasks
+		check_bg_jobs(env);
 
+		// print command line
+		char* user = getenv("USER");
 		if (user) {
-			printf("[%s: slush] %s ", user, env->cwd);
+			printf("[%s: slush] %s ", user, env->pwd);
 		} else {
-			printf("[slush] %s ", env->cwd);
+			printf("[slush] %s ", env->pwd);
 		}
 
 		// get input
-		if (!fgets(input, MAX_CMD_LENGTH + 1, stdin))
+		linecap = 0;
+		if (getline(&input, &linecap, stdin) == -1)
 			break;
+
+		// skip empty lines
+		if (linecap <= 1 || (linecap == 2 && input[0] == '\n'))
+			continue;
 
 		struct command* cmd = parse_command(input);
 
-		// TODO: Don't die on parse errors, provide better error handling instead!
-
-		if (!cmd) {
-			fprintf(stderr, "Quitting due to error\n");
-			return 1;
-		}
+		if (!cmd)
+			continue;
 
 		if (!cmd->invocation) {
 			// exit condition

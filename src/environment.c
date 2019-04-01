@@ -7,17 +7,17 @@ struct environment* initialize_env() {
 		return NULL;
 	}
 
-	// initialize the CWD path
-	char* cwd = calloc(FILENAME_MAX, sizeof(char));
-	if (!cwd) {
+	// initialize the PWD path
+	char* pwd = calloc(FILENAME_MAX, sizeof(char));
+	if (!pwd) {
 		return NULL;
 	}
 
-	if (!getcwd(cwd, FILENAME_MAX)) {
+	if (!getcwd(pwd, FILENAME_MAX)) {
 		return NULL;
 	}
 
-	env->cwd = cwd;
+	env->pwd = pwd;
 
 	char* env_path = getenv("PATH");
 
@@ -83,4 +83,34 @@ char* find_executable(struct environment* env, char* program) {
 	}
 
 	return NULL;
+}
+
+/// Appends the PID of a background job to the `jobs` array of the environment.
+void append_job(struct environment* env, pid_t new_pid) {
+	if (!env->jobs) {
+		env->jobs = calloc(2, sizeof(pid_t));
+
+		if (!env->jobs) {
+			fprintf(stderr, "Could not allocate memory\n");
+			return;
+		}
+
+		env->jobs[0] = new_pid;
+		env->jobs[1] = -1;
+	} else {
+		// get size of jobs array
+		int len = 1;
+		while (env->jobs[len - 1] != -1)
+			len++;
+
+		// expand and assign new PID
+		env->jobs = realloc(env->jobs, (len + 1) * sizeof(pid_t));
+		if (!env->jobs) {
+			fprintf(stderr, "Could not allocate memory\n");
+			return;
+		}
+
+		env->jobs[len-1] = new_pid;
+		env->jobs[len] = -1;
+	}
 }

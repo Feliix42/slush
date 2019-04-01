@@ -48,10 +48,10 @@ back_ground
         ;
 
 command
-	: command STRING	{ if (!add_argument(command, $2)) return 0; }
+	: command STRING	{ if (!add_argument(command, $2)) return 2; }
 	| STRING		{
-			if (!append_invocation(command, $1)) return 0;
-			if (!add_argument(command, $1)) return 0;
+			if (!append_invocation(command, $1)) return 2;
+			if (!add_argument(command, $1)) return 2;
 		}
         ;
 

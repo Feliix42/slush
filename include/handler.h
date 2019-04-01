@@ -11,5 +11,6 @@
 #include <environment.h>
 
 int handle_command(struct command* cmd, struct environment* env);
+void check_bg_jobs(struct environment* env);
 
 #endif
