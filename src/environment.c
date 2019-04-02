@@ -22,7 +22,6 @@ struct environment* initialize_env() {
 	char* env_path = getenv("PATH");
 
 	if (env_path) {
-		printf("PATH: %s\n", env_path);
 		// count no of paths in the path variable for allocation
 		int path_elems = 1;
 		for (unsigned long i = 0; i < strlen(env_path); i++) {
@@ -38,7 +37,7 @@ struct environment* initialize_env() {
 		// split the path variable into a string array (Note: last element is NULL!)
 		char* token = strtok(env_path, ":");
 		int j = 0;
-		while(token) {
+		while (token) {
 			path[j] = token;
 			j++;
 			token = strtok(NULL, ":");

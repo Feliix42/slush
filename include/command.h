@@ -1,5 +1,5 @@
-#ifndef COMMAND_H
-#define COMMAND_H
+#ifndef __COMMAND_H__
+#define __COMMAND_H__
 
 #include <stdio.h>
 #include <stdlib.h>

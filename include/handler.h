@@ -1,5 +1,5 @@
-#ifndef HANDLER_H
-#define HANDLER_H
+#ifndef __HANDLER_H__
+#define __HANDLER_H__
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <sys/errno.h>
 #include <sys/wait.h>
+
+#include <builtins.h>
 #include <command.h>
 #include <environment.h>
 
