@@ -1,4 +1,8 @@
 build/
+include/parser.h
+include/scanner.h
+src/parser.c
+src/scanner.c
 
 # Created by https://www.gitignore.io/api/c,c++
 

@@ -30,7 +30,7 @@ $(OBJ_DIR)/%.o: %.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(INCLUDE) -o $@ -c $<
 
-$(APP_DIR)/$(TARGET): $(YFILES) $(LFILES) $(OBJECTS)
+$(APP_DIR)/$(TARGET): flex bison $(OBJECTS)
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(INCLUDE) $(LDFLAGS) -o $(APP_DIR)/$(TARGET) $(OBJECTS)
 

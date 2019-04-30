@@ -53,6 +53,13 @@ int handle_command(struct command* cmd, struct environment* env) {
 	return 1;
 }
 
+int execute(struct command* cmd, struct environment* env) {
+	for (struct program* cur = cmd->invocation; cur != NULL; cur = cur->next) {
+		// in chain: fork, pipe outputs to next element (if any) and make every process in the chain wait for the next one
+		// TODO
+	}
+}
+
 /// Checks state of all background tasks and reports whether they are done processing.
 void check_bg_jobs(struct environment* env) {
 	// TODO: better job handling that also reports other state changes

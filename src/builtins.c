@@ -1,7 +1,7 @@
 #include <builtins.h>
 
 
-void change_dir(struct environent* env, char* target) {
+void change_dir(struct environment* env, char* target) {
 	char* new_dir;
 
 	if (!target || strlen(target) == 0) {
@@ -37,7 +37,7 @@ void change_dir(struct environent* env, char* target) {
 				// ignore ../ when path is already at "/"
 				if (new_dir != last_slash) {
 					*last_slash = '\0';
-					new_dir = realloc(new_dir, (last_slash - new_dir + 1) / sizeof(char))
+					new_dir = realloc(new_dir, (last_slash - new_dir + 1) / sizeof(char));
 				}
 			} else {
 				char* tmp = new_dir;
@@ -61,7 +61,7 @@ void change_dir(struct environent* env, char* target) {
 	// change the directory and update the pwd in the environment
 	if (chdir(new_dir) == -1) {
 		switch (errno) {
-		case EACCESS:
+		case EACCES:
 			fprintf(stderr, "Permission denied. Please make sure you have the correct access rights.\n");
 			break;
 		case ELOOP:
