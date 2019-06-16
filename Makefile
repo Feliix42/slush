@@ -2,13 +2,21 @@ CC	:= gcc
 YACC	:= bison
 LEX	:= flex
 CFLAGS	:= -std=c11 -Wpedantic -Wall -Wextra # -Werror
-LDFLAGS	:= -ll
+# LDFLAGS	:= -ll
 BUILD	:= ./build
 OBJ_DIR	:= $(BUILD)/objects
 APP_DIR := $(BUILD)/apps
 TARGET	:= slush
 INCLUDE	:= -Iinclude/
 SRC	:= $(wildcard src/*.c)
+
+# use libedit on macOS
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+        LDFLAGS += -ledit -ltermcap -ll
+else
+        LDFLAGS += -lreadline
+endif
 
 OBJECTS	:= $(SRC:%.c=$(OBJ_DIR)/%.o)
 

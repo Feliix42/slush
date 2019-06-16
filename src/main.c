@@ -35,7 +35,7 @@ int main(void) {
 	printf("Welcome to slush - the stupid & lightly underwhelming shell!\n");
 
 	char* input = NULL;
-	size_t linecap = 0;
+
 	// initialize the environment variable
 	struct environment* env = initialize_env();
 
@@ -43,6 +43,19 @@ int main(void) {
 		fprintf(stderr, "Failed to allocate memory\n");
 		return 1;
 	}
+
+	#ifdef __APPLE__
+	// TODO: Handle NULL
+	int* linecap = calloc(1, sizeof(int));
+	EditLine* el = el_init("slush", stdin, stdout, stderr);
+	History* hist = history_init();
+	HistEvent* ev = calloc(1, sizeof(HistEvent));
+	history(hist, ev, H_SETUNIQUE, 1);
+
+	// TODO: Set up and add history functionality
+	// el_set(el, EL_PROMPT, char *(*f)(EditLine *));
+	el_set(el, EL_HIST, history, hist);
+	#endif
 
 	while (true) {
 		// check status of any background tasks
@@ -57,13 +70,34 @@ int main(void) {
 		}
 
 		// get input
-		linecap = 0;
-		if (getline(&input, &linecap, stdin) == -1)
+		#ifdef __APPLE__
+		*linecap = 0;
+		input = el_gets(el, linecap);
+
+		if (!input)
 			break;
 
+		// add input to the history
+		// TODO: Add return value??
+		history(hist, ev, H_ENTER, input);
+		#else
+
+		input = readline(NULL);
+
+		if (!input)
+			break;
+
+		printf("Input: %s\n", input);
+
+		#endif
+
+		/* linecap = 0; */
+		/* if (getline(&input, &linecap, stdin) == -1) */
+		/* 	break; */
+
 		// skip empty lines
-		if (linecap <= 1 || (linecap == 2 && input[0] == '\n'))
-			continue;
+		// if (linecap <= 1 || (linecap == 2 && input[0] == '\n'))
+		// 	continue;
 
 		struct command* cmd = parse_command(input);
 
@@ -77,7 +111,15 @@ int main(void) {
 
 		// TODO: Match return value of command
 		handle_command(cmd, env);
+
+		// last step: freeing the returned string!
+		free(input);
 	}
+
+	#ifdef __APPLE__
+	history_end(hist);
+	el_end(el);
+	#endif
 
 	printf("exit\n");
 	return 0;
