@@ -44,19 +44,6 @@ int main(void) {
 		return 1;
 	}
 
-	#ifdef __APPLE__
-	// TODO: Handle NULL
-	int* linecap = calloc(1, sizeof(int));
-	EditLine* el = el_init("slush", stdin, stdout, stderr);
-	History* hist = history_init();
-	HistEvent* ev = calloc(1, sizeof(HistEvent));
-	history(hist, ev, H_SETUNIQUE, 1);
-
-	// TODO: Set up and add history functionality
-	// el_set(el, EL_PROMPT, char *(*f)(EditLine *));
-	el_set(el, EL_HIST, history, hist);
-	#endif
-
 	while (true) {
 		// check status of any background tasks
 		check_bg_jobs(env);
@@ -70,26 +57,12 @@ int main(void) {
 		}
 
 		// get input
-		#ifdef __APPLE__
-		*linecap = 0;
-		input = el_gets(el, linecap);
-
-		if (!input)
-			break;
-
-		// add input to the history
-		// TODO: Add return value??
-		history(hist, ev, H_ENTER, input);
-		#else
-
 		input = readline(NULL);
 
 		if (!input)
 			break;
 
 		printf("Input: %s\n", input);
-
-		#endif
 
 		/* linecap = 0; */
 		/* if (getline(&input, &linecap, stdin) == -1) */
@@ -115,11 +88,6 @@ int main(void) {
 		// last step: freeing the returned string!
 		free(input);
 	}
-
-	#ifdef __APPLE__
-	history_end(hist);
-	el_end(el);
-	#endif
 
 	printf("exit\n");
 	return 0;

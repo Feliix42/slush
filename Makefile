@@ -1,7 +1,7 @@
 CC	:= gcc
 YACC	:= bison
 LEX	:= flex
-CFLAGS	:= -std=c11 -Wpedantic -Wall -Wextra # -Werror
+CFLAGS	:= -std=c11 -D_XOPEN_SOURCE=500 -Wpedantic -Wall -Wextra # -Werror
 # LDFLAGS	:= -ll
 BUILD	:= ./build
 OBJ_DIR	:= $(BUILD)/objects

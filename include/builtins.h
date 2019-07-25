@@ -11,6 +11,6 @@
 
 void change_dir(struct environment* env, char* target);
 void pwd(struct environment* env);
-void kill(char* signal, char* pid);
+void kill_process(char* signal, char* pid);
 
 #endif

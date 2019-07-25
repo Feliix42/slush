@@ -87,6 +87,7 @@ void pwd(struct environment* env) {
 	printf("%s\n", env->pwd);
 }
 
-void kill(char* signal, char* pid) {
-
+void kill_process(char* signal, char* pid) {
+	(void)signal;
+	(void)pid;
 }

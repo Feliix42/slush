@@ -13,7 +13,7 @@ char *strdup(const char *s);
 
 %option warn nodefault
 
-%option reentrant noyywrap never-interactive nounistd
+%option reentrant noyywrap never-interactive nounistd noinput nounput
 %option bison-bridge
 
 NL              [\n]

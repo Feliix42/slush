@@ -7,7 +7,9 @@
 #include <parser.h>
 #include <scanner.h>
 
-int yyerror(struct command* command, yyscan_t scanner, const char* msg) {
+void yyerror(struct command* command, yyscan_t scanner, const char* msg) {
+	(void)command;
+	(void)scanner;
 	fprintf(stderr, "Error: %s\n", msg);
 }
 
