@@ -12,7 +12,7 @@ int append_invocation(struct command* cmd, char* program) {
 	if (!cmd->invocation) {
 		cmd->invocation = calloc(1, sizeof(struct program));
 		if (!cmd->invocation) {
-			fprintf(stderr, "Could not allocate memory\n");
+			fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
 			return 0;
 		}
 		cur = cmd->invocation;
@@ -26,7 +26,7 @@ int append_invocation(struct command* cmd, char* program) {
 
 		struct program* new_prog = calloc(1, sizeof(struct program));
 		if (!new_prog) {
-			fprintf(stderr, "Could not allocate memory\n");
+			fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
 			return 0;
 		}
 		cur->next = new_prog;
@@ -50,7 +50,7 @@ int add_argument(struct command* cmd, char* argument) {
 		// this is the first argument
 		cur->args = calloc(2, sizeof(char*));
 		if (!cur->args) {
-			fprintf(stderr, "Could not allocate memory\n");
+			fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
 			return 0;
 		}
 		cur->args[0] = argument;
@@ -63,7 +63,7 @@ int add_argument(struct command* cmd, char* argument) {
 
 		cur->args = realloc(cur->args, (len + 2) * sizeof(char*));
 		if (!cur->args) {
-			fprintf(stderr, "Could not allocate memory\n");
+			fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
 			return 0;
 		}
 

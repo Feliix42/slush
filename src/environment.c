@@ -81,7 +81,7 @@ char* find_executable(struct environment* env, char* program) {
 
 	char* abspath = malloc(FILENAME_MAX * sizeof(char));
 	if (!abspath) {
-		fprintf(stderr, "Could not allocate memory\n");
+		fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
 		return NULL;
 	}
 
@@ -114,7 +114,7 @@ void append_job(struct environment* env, pid_t new_pid) {
 		env->jobs = calloc(2, sizeof(pid_t));
 
 		if (!env->jobs) {
-			fprintf(stderr, "Could not allocate memory\n");
+			fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
 			return;
 		}
 
@@ -129,7 +129,7 @@ void append_job(struct environment* env, pid_t new_pid) {
 		// expand and assign new PID
 		env->jobs = realloc(env->jobs, (len + 1) * sizeof(pid_t));
 		if (!env->jobs) {
-			fprintf(stderr, "Could not allocate memory\n");
+			fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
 			return;
 		}
 

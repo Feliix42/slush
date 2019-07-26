@@ -6,14 +6,14 @@ int handle_command(struct command* cmd, struct environment* env) {
 	// TODO: expand for more than one program invocation at a time
 	char* prog = find_executable(env, cmd->invocation->command);
 	if (!prog) {
-		fprintf(stderr, "slush: Unknown command %s\n", cmd->invocation->command);
+		fprintf(stderr, "\033[93m[slush] Unknown command %s\033[0m\n", cmd->invocation->command);
 		return 0;
 	}
 
 	pid_t pid = fork();
 
 	if (pid < 0) {
-		fprintf(stderr, "Error: Could not fork! %s\n", strerror(errno));
+		fprintf(stderr, "\033[91m[slush: error] Could not fork! %s\033[0m\n", strerror(errno));
 		exit(1);
 	}
 
@@ -22,7 +22,7 @@ int handle_command(struct command* cmd, struct environment* env) {
 		if (cmd->input_redir) {
 			close(STDIN_FILENO);
 			if (openat(STDIN_FILENO, cmd->input_redir, O_RDONLY) == -1) {
-				fprintf(stderr, "Unable to open STDIN file. %s\n", strerror(errno));
+				fprintf(stderr, "\033[91m[slush: error] Unable to open STDIN file. %s\033[0m\n", strerror(errno));
 				exit(1);
 			}
 		}
@@ -30,7 +30,7 @@ int handle_command(struct command* cmd, struct environment* env) {
 		if (cmd->output_redir) {
 			close(STDOUT_FILENO);
 			if (openat(STDOUT_FILENO, cmd->output_redir, O_WRONLY | O_CREAT) == -1) {
-				fprintf(stderr, "Unable to open STDOUT file. %s\n", strerror(errno));
+				fprintf(stderr, "\033[91m[slush: error] Unable to open STDOUT file. %s\033[0m\n", strerror(errno));
 				exit(1);
 			}
 		}
@@ -38,7 +38,7 @@ int handle_command(struct command* cmd, struct environment* env) {
 		// run execve to start the program
 		if (execve(prog, cmd->invocation->args, environ) == -1) {
 			// TODO: maybe(!) err handling
-			fprintf(stderr, "Failed to execute %s (%s)\n", prog, strerror(errno));
+			fprintf(stderr, "\033[91m[slush: error] Failed to execute %s (%s)\033[0m\n", prog, strerror(errno));
 			exit(1);
 		}
 	} else {
@@ -82,7 +82,7 @@ void check_bg_jobs(struct environment* env) {
 			continue;
 
 		if (res == -1) {
-			fprintf(stderr, "An internal error occured! (errno %d)\n", errno);
+			fprintf(stderr, "\033[91m[slush: error] An internal error occured! (errno %d)\033[0m\n", errno);
 			continue;
 		}
 

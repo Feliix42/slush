@@ -10,7 +10,7 @@
 void yyerror(struct command* command, yyscan_t scanner, const char* msg) {
 	(void)command;
 	(void)scanner;
-	fprintf(stderr, "Error: %s\n", msg);
+	fprintf(stderr, "\033[93mSyntax Error: %s\033[0m\n", msg);
 }
 
 %}

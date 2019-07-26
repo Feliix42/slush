@@ -8,12 +8,12 @@ struct command* parse_command(const char* expr) {
 	struct command* cmd = calloc(1, sizeof(struct command));
 
 	if (!cmd) {
-		fprintf(stderr, "Could not allocate memory!\n");
+		fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
 		return NULL;
 	}
 
 	if (yylex_init(&scanner)) {
-		fprintf(stderr, "Could not initialize scanner!\n");
+		fprintf(stderr, "\033[91m[slush: error] Could not initialize scanner!\033[0m\n");
 		free(cmd);
 		return NULL;
 	}
@@ -42,7 +42,7 @@ int main(void) {
 	struct environment* env = initialize_env();
 
 	if (!env) {
-		fprintf(stderr, "Failed to allocate memory\n");
+		fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
 		return 1;
 	}
 
