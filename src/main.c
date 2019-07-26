@@ -14,6 +14,7 @@ struct command* parse_command(const char* expr) {
 
 	if (yylex_init(&scanner)) {
 		fprintf(stderr, "Could not initialize scanner!\n");
+		free(cmd);
 		return NULL;
 	}
 
@@ -22,6 +23,7 @@ struct command* parse_command(const char* expr) {
 	if (yyparse(cmd, scanner)) {
 		// TODO: Error handling https://www.gnu.org/software/bison/manual/html_node/Parser-Function.html
 		// error during parse occured
+		deinitialize_cmd(cmd);
 		return NULL;
 	}
 
@@ -85,9 +87,12 @@ int main(void) {
 		// TODO: Match return value of command
 		handle_command(cmd, env);
 
-		// last step: freeing the returned string!
+		// last step: freeing any allocated memory
+		deinitialize_cmd(cmd);
 		free(input);
 	}
+
+	deinitialize_env(env);
 
 	printf("exit\n");
 	return 0;

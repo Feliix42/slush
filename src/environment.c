@@ -10,10 +10,13 @@ struct environment* initialize_env() {
 	// initialize the PWD path
 	char* pwd = calloc(FILENAME_MAX, sizeof(char));
 	if (!pwd) {
+		free(env);
 		return NULL;
 	}
 
 	if (!getcwd(pwd, FILENAME_MAX)) {
+		free(pwd);
+		free(env);
 		return NULL;
 	}
 
@@ -31,6 +34,9 @@ struct environment* initialize_env() {
 
 		char** path = calloc(path_elems + 1, sizeof(char*));
 		if (!path) {
+			free(env_path);
+			free(pwd);
+			free(env);
 			return NULL;
 		}
 
@@ -47,6 +53,23 @@ struct environment* initialize_env() {
 	}
 
 	return env;
+}
+
+/// Deallocated the environment structure and all associated memory regions.
+void deinitialize_env(struct environment* env) {
+	if (env->pwd) {
+		free(env->pwd);
+	}
+
+	if (env->path) {
+		free(env->path);
+	}
+
+	if (env->jobs) {
+		free(env->jobs);
+	}
+
+	free(env);
 }
 
 /// Iterates through the $PATH variable paths and attempts to find the specified program.
@@ -81,6 +104,7 @@ char* find_executable(struct environment* env, char* program) {
 		}
 	}
 
+	free(abspath);
 	return NULL;
 }
 

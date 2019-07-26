@@ -13,7 +13,7 @@ int handle_command(struct command* cmd, struct environment* env) {
 	pid_t pid = fork();
 
 	if (pid < 0) {
-		fprintf(stderr, "Error: Could not fork!\n");
+		fprintf(stderr, "Error: Could not fork! %s\n", strerror(errno));
 		exit(1);
 	}
 
@@ -22,7 +22,7 @@ int handle_command(struct command* cmd, struct environment* env) {
 		if (cmd->input_redir) {
 			close(STDIN_FILENO);
 			if (openat(STDIN_FILENO, cmd->input_redir, O_RDONLY) == -1) {
-				fprintf(stderr, "Unable to open STDIN file. Errno %d\n", errno);
+				fprintf(stderr, "Unable to open STDIN file. %s\n", strerror(errno));
 				exit(1);
 			}
 		}
@@ -30,7 +30,7 @@ int handle_command(struct command* cmd, struct environment* env) {
 		if (cmd->output_redir) {
 			close(STDOUT_FILENO);
 			if (openat(STDOUT_FILENO, cmd->output_redir, O_WRONLY | O_CREAT) == -1) {
-				fprintf(stderr, "Unable to open STDOUT file. Errno %d\n", errno);
+				fprintf(stderr, "Unable to open STDOUT file. %s\n", strerror(errno));
 				exit(1);
 			}
 		}
@@ -38,7 +38,7 @@ int handle_command(struct command* cmd, struct environment* env) {
 		// run execve to start the program
 		if (execve(prog, cmd->invocation->args, environ) == -1) {
 			// TODO: maybe(!) err handling
-			fprintf(stderr, "Failed to execute %s (errno %d)\n", prog, errno);
+			fprintf(stderr, "Failed to execute %s (%s)\n", prog, strerror(errno));
 			exit(1);
 		}
 	} else {
@@ -50,6 +50,7 @@ int handle_command(struct command* cmd, struct environment* env) {
 		}
 	}
 
+	free(prog);
 	return 1;
 }
 
@@ -58,6 +59,11 @@ int execute(struct command* cmd, struct environment* env) {
 		// in chain: fork, pipe outputs to next element (if any) and make every process in the chain wait for the next one
 		// TODO
 	}
+
+
+	// TODO: Remove:
+	(void)env;
+	return 0;
 }
 
 /// Checks state of all background tasks and reports whether they are done processing.

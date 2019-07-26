@@ -73,3 +73,35 @@ int add_argument(struct command* cmd, char* argument) {
 
 	return 1;
 }
+
+/// Iteratively frees all memory allocated for the `cmd` data structure.
+void deinitialize_cmd(struct command* cmd) {
+	if (cmd->input_redir) {
+		free(cmd->input_redir);
+	}
+
+	if (cmd->output_redir) {
+		free(cmd->output_redir);
+	}
+
+	struct program* cur = cmd->invocation;
+	while (cur != NULL) {
+		struct program* this = cur;
+
+		// this->command itself must not be freed as it is also part of the `args` data structure
+		if (this->args) {
+			int len = 0;
+			while (this->args[len] != NULL) {
+				free(this->args[len]);
+				len++;
+			}
+
+			free(this->args);
+		}
+
+		cur = this->next;
+		free(this);
+	}
+
+	free(cmd);
+}

@@ -22,7 +22,7 @@ struct command {
 struct program {
 	/// the command to execute
 	char* command;
-	/// additional arguments provided to the invocation
+	/// additional arguments provided to the invocation -- always contains a trailing NULL field
 	char** args;
 	/// if this is a pipe-chain of commands, this links to the next command
 	struct program* next;
@@ -33,5 +33,7 @@ struct program {
 
 int append_invocation(struct command* cmd, char* program);
 int add_argument(struct command* cmd, char* argument);
+
+void deinitialize_cmd(struct command* cmd);
 
 #endif
