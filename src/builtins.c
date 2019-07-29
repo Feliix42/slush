@@ -1,5 +1,10 @@
 #include <builtins.h>
 
+/// Prints the help for builtins.
+void print_builtins_help() {
+	// TODO: Write help
+	puts("TODO");
+}
 
 void change_dir(struct environment* env, char* target) {
 	char* new_dir;

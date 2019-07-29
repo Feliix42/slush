@@ -10,6 +10,7 @@
 
 #include <environment.h>
 
+void print_builtins_help();
 void change_dir(struct environment* env, char* target);
 void pwd(struct environment* env);
 void kill_process(char* signal, char* pid);

@@ -11,7 +11,8 @@
 struct environment {
 	/// Path to the present working directory
 	char* pwd;
-	/// An array of all paths in the path variable. Always reserves a NULL element at the end for iteration.
+	/// An array of all paths in the path variable.
+	/// Always reserves a NULL element at the end for iteration.
 	char** path;
 	// TODO: Better representation that also includes the original command etc.
 	/// `-1`-terminated array of PIDs that are processing in the background

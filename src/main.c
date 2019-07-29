@@ -1,6 +1,11 @@
 #include <main.h>
 
 #define MAX_CMD_LENGTH 400
+#ifndef PATH_MAX
+#define PROMPT_LENGTH 600
+#else
+#define PROMPT_LENGTH PATH_MAX + 100
+#endif	/* PATH_MAX */
 
 struct command* parse_command(const char* expr) {
 	yyscan_t scanner;
@@ -46,33 +51,48 @@ int main(void) {
 		return 1;
 	}
 
+	// initialize history
+	using_history();
+	// load old history
+	char* hist_file;
+	asprintf(&hist_file, "%s/.slush_history", getenv("HOME"));
+	if (read_history(hist_file) == ENOENT) {
+		int fd = open(hist_file, O_CREAT, S_IRUSR & S_IWUSR);
+		if (fd != -1) {
+			close(fd);
+		} else {
+			fprintf(stderr, "\033[94m[slush: warning] Could not store history - %s\033[0m\n", strerror(errno));
+		}
+	}
+
 	while (true) {
 		// check status of any background tasks
 		check_bg_jobs(env);
 
-		// print command line
+		// build command line string
+		char* prompt;
+		int result = 0;
 		char* user = getenv("USER");
 		if (user) {
-			printf("[%s: slush] %s ", user, env->pwd);
+			// TODO: Use ~ for the pwd
+			result = asprintf(&prompt, "[%s: slush] %s ", user, env->pwd);
 		} else {
-			printf("[slush] %s ", env->pwd);
+			strcpy(prompt, "[slush] \0");
+			result = asprintf(&prompt, "[slush] %s ", env->pwd);
+		}
+
+		if (result == -1) {
+			fprintf(stderr, "\033[91m[slush: error] Could not allocate memory for prompt!\033[0m\n");
+			return 1;
 		}
 
 		// get input
-		input = readline(NULL);
+		input = readline(prompt);
 
 		if (!input)
 			break;
 
 		printf("Input: %s\n", input);
-
-		/* linecap = 0; */
-		/* if (getline(&input, &linecap, stdin) == -1) */
-		/* 	break; */
-
-		// skip empty lines
-		// if (linecap <= 1 || (linecap == 2 && input[0] == '\n'))
-		// 	continue;
 
 		struct command* cmd = parse_command(input);
 
@@ -81,8 +101,12 @@ int main(void) {
 
 		if (!cmd->invocation) {
 			// exit condition
+			deinitialize_cmd(cmd);
 			break;
 		}
+
+		// add history entry
+		add_history(input);
 
 		// TODO: Match return value of command
 		handle_command(cmd, env);
@@ -90,7 +114,16 @@ int main(void) {
 		// last step: freeing any allocated memory
 		deinitialize_cmd(cmd);
 		free(input);
+		free(prompt);
 	}
+
+	// save and deinitialize history
+	int res = write_history(hist_file);
+	if (res != 0) {
+		fprintf(stderr, "\033[94m[slush: warning] Could not store history - %s\033[0m\n", strerror(res));
+	}
+	// don't store more than 10.000 history entries
+	history_truncate_file(hist_file, 10000);
 
 	deinitialize_env(env);
 
