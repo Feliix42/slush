@@ -20,34 +20,32 @@ pid_t handle_command(struct program* invoc, struct environment* env, int in[2], 
 
 	if (pid == 0) {
 		// child
-		if (in[1] != -1) {
+		if (in[0] != -1) {
 			// redirect the STDIN_FILENO to pipe
-			if (dup2(in[1], STDIN_FILENO) == -1) {
+			if (dup2(in[0], STDIN_FILENO) == -1) {
 				fprintf(stderr, "\033[91m[slush: error] Unable to open PIPE. %s\033[0m\n", strerror(errno));
 				exit(1);
 			}
 		} else {
 			// otherwise this is the first input
 			if (cmd->input_redir) {
-				close(STDIN_FILENO);
-				if (openat(STDIN_FILENO, cmd->input_redir, O_RDONLY) == -1) {
+				if (freopen(cmd->input_redir, "r", stdin) == NULL) {
 					fprintf(stderr, "\033[91m[slush: error] Unable to open STDIN file. %s\033[0m\n", strerror(errno));
 					exit(1);
 				}
 			}
 		}
 
-		if (out[0] != -1) {
+		if (out[1] != -1) {
 			// redirect the STDOUT_FILENO to pipe
-			if (dup2(out[0], STDOUT_FILENO) == -1) {
+			if (dup2(out[1], STDOUT_FILENO) == -1) {
 				fprintf(stderr, "\033[91m[slush: error] Unable to open PIPE. %s\033[0m\n", strerror(errno));
 				exit(1);
 			}
 		} else {
 			// otherwise this is the last part of the chain
 			if (cmd->output_redir) {
-				close(STDOUT_FILENO);
-				if (openat(STDOUT_FILENO, cmd->output_redir, O_WRONLY | O_CREAT) == -1) {
+				if (freopen(cmd->output_redir, "w", stdout) == NULL) {
 					fprintf(stderr, "\033[91m[slush: error] Unable to open STDOUT file. %s\033[0m\n", strerror(errno));
 					exit(1);
 				}
@@ -94,7 +92,10 @@ int execute(struct command* cmd, struct environment* env) {
 
 	pid_t lead = -1;
 	// we allocate one item more than necessary because we want a `-1` terminated list
-	pid_t* associated_jobs = calloc(len, sizeof(pid_t));
+	pid_t* associated_jobs = NULL;
+	if (len != 0) {
+		associated_jobs = calloc(len, sizeof(pid_t));
+	}
 	int cur_assoc_pos = 0;
 
 	for (struct program* cur = cmd->invocation; cur != NULL; cur = cur->next) {
@@ -132,9 +133,9 @@ int execute(struct command* cmd, struct environment* env) {
 		}
 
 		// at last, close unnecessary file descriptors
-		close(pipein[1]);
-		close(pipeout[0]);
-		pipeout[0] = -1;
+		close(pipein[0]);
+		close(pipeout[1]);
+		pipeout[1] = -1;
 	}
 
 	if (lead == -1) {
@@ -162,7 +163,8 @@ int execute(struct command* cmd, struct environment* env) {
 					continue;
 				}
 			}
-
+		}
+		if (associated_jobs) {
 			free(associated_jobs);
 		}
 	}
