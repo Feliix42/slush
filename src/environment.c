@@ -85,32 +85,47 @@ char* find_executable(struct environment* env, char* program) {
 		return NULL;
 	}
 
-	char* abspath = malloc(FILENAME_MAX * sizeof(char));
-	if (!abspath) {
-		fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
-		return NULL;
-	}
-
-	// iteratively check for every path + program combination and return immediately if it exists
-	for (int i = 0; env->path[i] != NULL; i++) {
-		strcpy(abspath, env->path[i]);
-		if (abspath[strlen(abspath) - 1] != '/') {
-			strcat(abspath, "/");
-		}
-
-		strcat(abspath, program);
+	if (strchr(program, '/')) {
+		// this is a relative path to the executable
+		char* abspath = realpath(program, NULL);
 
 		struct stat buffer;
-		if (stat(abspath, &buffer)) {
-			continue;
+		if (!stat(abspath, &buffer)) {
+			if ((buffer.st_mode & S_IFMT) == S_IFREG) {
+				return abspath;
+			}
 		}
 
-		if ((buffer.st_mode & S_IFMT) == S_IFREG) {
-			return abspath;
+		free(abspath);
+	} else {
+		char* abspath = malloc(FILENAME_MAX * sizeof(char));
+		if (!abspath) {
+			fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
+			return NULL;
 		}
+
+		// iteratively check for every path + program combination and return immediately if it exists
+		for (int i = 0; env->path[i] != NULL; i++) {
+			strcpy(abspath, env->path[i]);
+			if (abspath[strlen(abspath) - 1] != '/') {
+				strcat(abspath, "/");
+			}
+
+			strcat(abspath, program);
+
+			struct stat buffer;
+			if (stat(abspath, &buffer)) {
+				continue;
+			}
+
+			if ((buffer.st_mode & S_IFMT) == S_IFREG) {
+				return abspath;
+			}
+		}
+
+		free(abspath);
 	}
 
-	free(abspath);
 	return NULL;
 }
 
