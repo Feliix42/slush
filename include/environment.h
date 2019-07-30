@@ -14,14 +14,24 @@ struct environment {
 	/// An array of all paths in the path variable.
 	/// Always reserves a NULL element at the end for iteration.
 	char** path;
-	// TODO: Better representation that also includes the original command etc.
-	/// `-1`-terminated array of PIDs that are processing in the background
-	pid_t* jobs;
+	/// Linked list of PIDs that are processing in the background
+	struct running_job* bg_jobs;
+};
+
+// TODO: Better representation that also includes the original command etc.
+/// Structure that represents a single running job, which may be a pipe-chain
+struct running_job {
+	/// The PID to wait for
+	pid_t job;
+	/// `-1`-terminated list of associated jobs from the pipe chain
+	pid_t* associated;
+	/// Link to the next element
+	struct running_job* next;
 };
 
 struct environment* initialize_env();
 void deinitialize_env(struct environment* env);
 char* find_executable(struct environment* env, char* program);
-void append_job(struct environment* env, pid_t new_pid);
+void append_job(struct environment* env, pid_t new_pid, pid_t* associated);
 
 #endif

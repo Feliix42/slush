@@ -65,8 +65,14 @@ void deinitialize_env(struct environment* env) {
 		free(env->path);
 	}
 
-	if (env->jobs) {
-		free(env->jobs);
+	if (env->bg_jobs) {
+		struct running_job* cur = env->bg_jobs;
+		while (cur != NULL) {
+			struct running_job* this = cur;
+			free(this->associated);
+			cur = this->next;
+			free(this);
+		}
 	}
 
 	free(env);
@@ -109,31 +115,29 @@ char* find_executable(struct environment* env, char* program) {
 }
 
 /// Appends the PID of a background job to the `jobs` array of the environment.
-void append_job(struct environment* env, pid_t new_pid) {
-	if (!env->jobs) {
-		env->jobs = calloc(2, sizeof(pid_t));
+void append_job(struct environment* env, pid_t new_pid, pid_t* associated) {
+	// build the new list item
+	struct running_job* jbs = calloc(1, sizeof(struct running_job));
+	if (!jbs) {
+		fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
+		return;
+	}
 
-		if (!env->jobs) {
-			fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
-			return;
-		}
+	jbs->job = new_pid;
+	if (associated) {
+		jbs->associated = associated;
+	}
 
-		env->jobs[0] = new_pid;
-		env->jobs[1] = -1;
+	// link into list
+	if (!env->bg_jobs) {
+		env->bg_jobs = jbs;
 	} else {
 		// get size of jobs array
-		int len = 1;
-		while (env->jobs[len - 1] != -1)
-			len++;
-
-		// expand and assign new PID
-		env->jobs = realloc(env->jobs, (len + 1) * sizeof(pid_t));
-		if (!env->jobs) {
-			fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
-			return;
+		struct running_job* cur = env->bg_jobs;
+		while (cur->next != NULL) {
+			cur = cur->next;
 		}
 
-		env->jobs[len-1] = new_pid;
-		env->jobs[len] = -1;
+		cur->next = jbs;
 	}
 }

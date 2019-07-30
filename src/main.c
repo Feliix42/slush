@@ -70,7 +70,7 @@ int main(void) {
 		check_bg_jobs(env);
 
 		// build command line string
-		char* prompt;
+		char* prompt = NULL;
 		int result = 0;
 		char* user = getenv("USER");
 		if (user) {
@@ -109,7 +109,7 @@ int main(void) {
 		add_history(input);
 
 		// TODO: Match return value of command
-		handle_command(cmd, env);
+		execute(cmd, env);
 
 		// last step: freeing any allocated memory
 		deinitialize_cmd(cmd);

@@ -5,16 +5,18 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <signal.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
 #include <sys/wait.h>
+#include <sys/types.h>
 
 #include <builtins.h>
 #include <command.h>
 #include <environment.h>
 
-int handle_command(struct command* cmd, struct environment* env);
+int execute(struct command* cmd, struct environment* env);
 void check_bg_jobs(struct environment* env);
 
 #endif

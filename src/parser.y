@@ -55,12 +55,12 @@ command
 			if (!append_invocation(command, $1)) return 2;
 			if (!add_argument(command, $1)) return 2;
 		}
-        ;
+		;
 
 output_redir
 	: OUTPUT_REDIR STRING	{ command->output_redir = $2; }
-        | 			{ /* nothing to be done */ }
-        ;
+	| 			{ /* nothing to be done */ }
+	;
 
 input_redir
 	: INPUT_REDIR STRING	{ command->input_redir = $2; }
