@@ -32,6 +32,5 @@ struct running_job {
 struct environment* initialize_env();
 void deinitialize_env(struct environment* env);
 char* find_executable(struct environment* env, char* program);
-void append_job(struct environment* env, pid_t new_pid, pid_t* associated);
 
 #endif

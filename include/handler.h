@@ -17,6 +17,5 @@
 #include <environment.h>
 
 int execute(struct command* cmd, struct environment* env);
-void check_bg_jobs(struct environment* env);
 
 #endif

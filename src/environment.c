@@ -128,31 +128,3 @@ char* find_executable(struct environment* env, char* program) {
 
 	return NULL;
 }
-
-/// Appends the PID of a background job to the `jobs` array of the environment.
-void append_job(struct environment* env, pid_t new_pid, pid_t* associated) {
-	// build the new list item
-	struct running_job* jbs = calloc(1, sizeof(struct running_job));
-	if (!jbs) {
-		fprintf(stderr, "\033[91m[slush: error] Could not allocate memory!\033[0m\n");
-		return;
-	}
-
-	jbs->job = new_pid;
-	if (associated) {
-		jbs->associated = associated;
-	}
-
-	// link into list
-	if (!env->bg_jobs) {
-		env->bg_jobs = jbs;
-	} else {
-		// get size of jobs array
-		struct running_job* cur = env->bg_jobs;
-		while (cur->next != NULL) {
-			cur = cur->next;
-		}
-
-		cur->next = jbs;
-	}
-}
