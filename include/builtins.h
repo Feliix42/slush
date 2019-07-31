@@ -1,18 +1,15 @@
 #ifndef __BUILTINS_H__
 #define __BUILTINS_H__
 
-#include <unistd.h>
 #include <stdio.h>
-#include <limits.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/errno.h>
+#include <unistd.h>
+#include <sys/types.h>
 
+#include <command.h>
 #include <environment.h>
+#include <builtins/fs.h>
+#include <builtins/processes.h>
 
-void print_builtins_help();
-void change_dir(struct environment* env, char* target);
-void pwd(struct environment* env);
-void kill_process(char* signal, char* pid);
+pid_t attempt_to_run_builtin(struct program* invoc, struct environment* env, int in[2], int out[2], struct command* cmd);
 
 #endif

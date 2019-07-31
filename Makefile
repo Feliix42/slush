@@ -8,7 +8,7 @@ OBJ_DIR	:= $(BUILD)/objects
 APP_DIR := $(BUILD)/apps
 TARGET	:= slush
 INCLUDE	:= -Iinclude/
-SRC	:= $(wildcard src/*.c)
+SRC	:= $(wildcard src/*.c) $(wildcard src/builtins/*.c)
 
 # use libedit on macOS
 UNAME_S := $(shell uname -s)

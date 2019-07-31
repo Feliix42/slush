@@ -15,6 +15,7 @@
 #include <builtins.h>
 #include <command.h>
 #include <environment.h>
+#include <jobs.h>
 
 int execute(struct command* cmd, struct environment* env);
 

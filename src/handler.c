@@ -116,7 +116,13 @@ int execute(struct command* cmd, struct environment* env) {
 			pipeout[1] = -1;
 		}
 
-		pid_t current_pid = handle_command(cur, env, pipein, pipeout, cmd);
+		// attempt to run the cmd as builtin first
+		pid_t current_pid = attempt_to_run_builtin(cur, env, pipein, pipeout, cmd);
+
+		// if no matching builtin can be spawned, it must be a normal cmd
+		if (!current_pid) {
+			current_pid = handle_command(cur, env, pipein, pipeout, cmd);
+		}
 
 		// on error, 0 is returned by `handle_command`
 		if (!current_pid) {

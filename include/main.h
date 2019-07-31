@@ -16,5 +16,6 @@
 #include <scanner.h>
 #include <handler.h>
 #include <environment.h>
+#include <jobs.h>
 
 #endif
