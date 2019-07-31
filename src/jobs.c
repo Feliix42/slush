@@ -12,29 +12,36 @@ void check_bg_jobs(struct environment* env) {
 	struct running_job* prev = NULL;
 
 	while (cur != NULL) {
-		pid_t res = waitpid(cur->job, 0, WNOHANG);
+		// non-parallel builtins are automatically done
+		if (cur->job != -2) {
+			pid_t res = waitpid(cur->job, 0, WNOHANG);
 
-		if (res == 0) {
-			prev = cur;
-			cur = cur->next;
-		 	continue;
+			if (res == 0) {
+				prev = cur;
+				cur = cur->next;
+			 	continue;
+			}
+
+			if (res == -1) {
+				fprintf(stderr, "\033[91m[slush: error] An internal error occured! (%s)\033[0m\n", strerror(errno));
+				prev = cur;
+				cur = cur->next;
+				continue;
+			}
+
+			// when control reaches this point, PID did return
+			printf("[slush: info] Job with PID %d has ended.\n", res);
 		}
 
-		if (res == -1) {
-			fprintf(stderr, "\033[91m[slush: error] An internal error occured! (%s)\033[0m\n", strerror(errno));
-			prev = cur;
-			cur = cur->next;
-			continue;
-		}
-
-		// when control reaches this point, PID did return
-		printf("[slush: info] Job with PID %d has ended.\n", res);
 		if (cur->associated) {
 			for (int i = 0; cur->associated[i] != -1; i++) {
-				// TODO: Theoretically, all processes should die of a SIGPIPE -> is kill necessary?
-				if (waitpid(cur->associated[i], 0, 0) == -1) {
-					fprintf(stderr, "\033[91m[slush: error] An internal error occured! (%s)\033[0m\n", strerror(errno));
-					continue;
+				// ignore non-parallel builtins
+				if (cur->associated[i] != -2) {
+					// TODO: Theoretically, all processes should die of a SIGPIPE -> is kill necessary?
+					if (waitpid(cur->associated[i], 0, 0) == -1) {
+						fprintf(stderr, "\033[91m[slush: error] An internal error occured! (%s)\033[0m\n", strerror(errno));
+						continue;
+					}
 				}
 			}
 

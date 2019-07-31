@@ -159,14 +159,18 @@ int execute(struct command* cmd, struct environment* env) {
 	if (cmd->background) {
 		append_job(env, lead, associated_jobs);
 	} else {
-		waitpid(lead, 0, 0);
+		if (lead != -2) {
+			waitpid(lead, 0, 0);
+		}
 
 		if (cmd->invocation->next) {
 			for (int i = 0; associated_jobs[i] != -1; i++) {
 				// TODO: Theoretically, all processes should die of a SIGPIPE -> is kill necessary?
-				if (waitpid(associated_jobs[i], 0, 0) == -1) {
-					fprintf(stderr, "\033[91m[slush: error] An internal error occured! (%s)\033[0m\n", strerror(errno));
-					continue;
+				if (associated_jobs[i] != -2) {
+					if (waitpid(associated_jobs[i], 0, 0) == -1) {
+						fprintf(stderr, "\033[91m[slush: error] An internal error occured! (%s)\033[0m\n", strerror(errno));
+						continue;
+					}
 				}
 			}
 		}
