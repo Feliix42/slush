@@ -126,7 +126,7 @@ pid_t attempt_to_run_builtin(struct program* invoc, struct environment* env, int
 		fprintf(stderr, "\033[94m[slush: info] `unalias` is not yet implemented.\033[0m\n");
 		break;
 	case JOBS:
-		fprintf(stderr, "\033[94m[slush: info] `jobs` is not yet implemented.\033[0m\n");
+		list_jobs(env);
 		break;
 	case RM:
 		fprintf(stderr, "\033[94m[slush: info] `rm` is not yet implemented.\033[0m\n");

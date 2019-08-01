@@ -19,7 +19,7 @@ void check_bg_jobs(struct environment* env) {
 			if (res == 0) {
 				prev = cur;
 				cur = cur->next;
-			 	continue;
+				continue;
 			}
 
 			if (res == -1) {
