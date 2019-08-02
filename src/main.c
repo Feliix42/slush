@@ -92,8 +92,6 @@ int main(void) {
 		if (!input)
 			break;
 
-		printf("Input: %s\n", input);
-
 		struct command* cmd = parse_command(input);
 
 		if (!cmd)

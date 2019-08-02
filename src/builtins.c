@@ -8,7 +8,7 @@ enum builtin {
 	ALIAS,
 	UNALIAS,
 	JOBS,
-	RM,
+	HELP,
 };
 
 /// Prints the help for builtins.
@@ -30,8 +30,8 @@ enum builtin match_invoc(char* program_name) {
 		return UNALIAS;
 	} else if (!strcmp(program_name, "jobs")) {
 		return JOBS;
-	} else if (!strcmp(program_name, "rm")) {
-		return RM;
+	} else if (!strcmp(program_name, "help")) {
+		return HELP;
 	} else {
 		return NONE;
 	}
@@ -48,6 +48,8 @@ pid_t attempt_to_run_builtin(struct program* invoc, struct environment* env, int
 	if (builtin_cmd == NONE) {
 		return 0;
 	}
+
+	// TODO: Redirect output from builtins
 
 	/* pid_t pid = fork();
 	if (pid < 0) {
@@ -117,7 +119,7 @@ pid_t attempt_to_run_builtin(struct program* invoc, struct environment* env, int
 		pwd(env);
 		break;
 	case KILL:
-		fprintf(stderr, "\033[94m[slush: info] `kill` is not yet implemented.\033[0m\n");
+		kill_process(argc, invoc->args);
 		break;
 	case ALIAS:
 		fprintf(stderr, "\033[94m[slush: info] `alias` is not yet implemented.\033[0m\n");
@@ -128,8 +130,8 @@ pid_t attempt_to_run_builtin(struct program* invoc, struct environment* env, int
 	case JOBS:
 		list_jobs(env);
 		break;
-	case RM:
-		fprintf(stderr, "\033[94m[slush: info] `rm` is not yet implemented.\033[0m\n");
+	case HELP:
+		print_builtins_help();
 		break;
 	default:
 		fprintf(stderr, "\033[91m[slush: error] Unknown builtin - How did that happen?\033[0m\n");
