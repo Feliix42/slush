@@ -122,10 +122,10 @@ pid_t attempt_to_run_builtin(struct program* invoc, struct environment* env, int
 		kill_process(argc, invoc->args);
 		break;
 	case ALIAS:
-		fprintf(stderr, "\033[94m[slush: info] `alias` is not yet implemented.\033[0m\n");
+		add_alias(env, argc, invoc->args);
 		break;
 	case UNALIAS:
-		fprintf(stderr, "\033[94m[slush: info] `unalias` is not yet implemented.\033[0m\n");
+		unalias(env, argc, invoc->args);
 		break;
 	case JOBS:
 		list_jobs(env);

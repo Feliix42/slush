@@ -2,7 +2,7 @@ CC	:= gcc
 YACC	:= bison
 LEX	:= flex
 CFLAGS	:= -std=c11 -D_POSIX_C_SOURCE=200809L -D_DEFAULT_SOURCE -D_GNU_SOURCE -Wpedantic -Wall -Wextra # -Werror
-# LDFLAGS	:= -ll
+LDFLAGS	:= -lreadline
 BUILD	:= ./build
 OBJ_DIR	:= $(BUILD)/objects
 APP_DIR := $(BUILD)/apps
@@ -13,9 +13,7 @@ SRC	:= $(wildcard src/*.c) $(wildcard src/builtins/*.c)
 # use libedit on macOS
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
-        LDFLAGS += -ledit -ltermcap -ll
-else
-        LDFLAGS += -lreadline
+        LDFLAGS += -ll
 endif
 
 OBJECTS	:= $(SRC:%.c=$(OBJ_DIR)/%.o)

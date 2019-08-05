@@ -24,6 +24,8 @@ BG              [&]
 CHAR            [0-9a-zA-Z_/\-\*\.]
 SPACE           [\032]
 
+%x IN_STRING
+
 %%
 
 exit            { return EXIT; }
@@ -33,6 +35,11 @@ exit            { return EXIT; }
 {OUTPUT_REDIR}  { return OUTPUT_REDIR; }
 {INPUT_REDIR}   { return INPUT_REDIR; }
 {CHAR}+         { yylval->string = strdup(yytext); return STRING; }
+
+\"              { BEGIN(IN_STRING); }
+<IN_STRING>\"   { BEGIN(INITIAL); }
+<IN_STRING>[^"\\]*   { yylval->string = strdup(yytext); return STRING; }
+
 .               { continue; }
 
 %%

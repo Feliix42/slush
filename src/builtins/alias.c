@@ -2,9 +2,13 @@
 
 // TODO: Alias replacement mittels stringsuche auf dem Volltext(?)
 void add_alias(struct environment* env, int argc, char** argv) {
+	for (int i = 0; i < argc; i++) {
+		printf("Argument %d: %s\n", i, argv[i]);
+	}
+
 	(void)env;
-	(void)argc;
-	(void)argv;
+	// (void)argc;
+	// (void)argv;
 	// TODO:
 	//  - parse input
 	//  - make sure alias does not exist yet
@@ -12,6 +16,11 @@ void add_alias(struct environment* env, int argc, char** argv) {
 }
 
 void unalias(struct environment* env, int argc, char** argv) {
+	if (!env->aliases) {
+		fprintf(stderr, "unalias: There are no aliases defined\n");
+		return;
+	}
+
 	if (argc < 2) {
 		fprintf(stderr, "unalias: Insufficient number of arguments!\n"
 		"Usage: unalias [alias [...]]\n");

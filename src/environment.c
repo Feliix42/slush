@@ -75,6 +75,17 @@ void deinitialize_env(struct environment* env) {
 		}
 	}
 
+	if (env->aliases) {
+		struct alias* cur = env->aliases;
+		while (cur != NULL) {
+			struct alias* this = cur;
+			free(this->command);
+			free(this->replacement);
+			cur = this->next;
+			free(this);
+		}
+	}
+
 	free(env);
 }
 
