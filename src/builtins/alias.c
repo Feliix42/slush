@@ -1,17 +1,53 @@
 #include <builtins/alias.h>
 
-// TODO: Alias replacement mittels stringsuche auf dem Volltext(?)
 void add_alias(struct environment* env, int argc, char** argv) {
 	for (int i = 0; i < argc; i++) {
 		printf("Argument %d: %s\n", i, argv[i]);
 	}
 
-	(void)env;
-	// (void)argc;
-	// (void)argv;
-	// TODO:
-	//  - parse input
-	//  - make sure alias does not exist yet
+	if (argc != 3) {
+		fprintf(stderr, "alias: Incorrect number of aliases!\n"
+			"Usage: alias <name> <command>\n");
+		return;
+	}
+
+	struct alias* new = calloc(1, sizeof(struct alias));
+	if (!new) {
+		fprintf(stderr, "\033[91m[slush: error] Could not allocate memory for new alias!\033[0m\n");
+		return;
+	}
+
+	new->command = strdup(argv[1]);
+	new->replacement = strdup(argv[2]);
+
+	if (!env->aliases) {
+		env->aliases = new;
+	} else {
+		struct alias* cur = env->aliases;
+		if (!strcmp(cur->command, new->command)) {
+			// a duplicate already exists
+			fprintf(stderr, "alias: %s is already aliased to \"%s\"\n", cur->command, cur->replacement);
+			free(new->command);
+			free(new->replacement);
+			free(new);
+			return;
+		}
+
+		while (cur->next != NULL) {
+			if (!strcmp(cur->command, new->command)) {
+				// a duplicate already exists
+				fprintf(stderr, "alias: %s is already aliased to \"%s\"\n", cur->command, cur->replacement);
+				free(new->command);
+				free(new->replacement);
+				free(new);
+				return;
+			}
+			cur = cur->next;
+		}
+
+		cur->next = new;
+	}
+
 	return;
 }
 
@@ -64,6 +100,7 @@ void unalias(struct environment* env, int argc, char** argv) {
 }
 
 char* apply_aliases(struct environment* env, char* input) {
+	// TODO: Alias replacement mittels stringsuche auf dem Volltext(?)
 	(void)env;
 	(void)input;
 	return NULL;
