@@ -38,6 +38,40 @@ struct command* parse_command(const char* expr) {
 	return cmd;
 }
 
+char* build_prompt(struct environment* env) {
+	char* prompt = NULL;
+	int result = 0;
+	char* user = getenv("USER");
+	char* home = getenv("HOME");
+
+	char* path = malloc((strlen(env->pwd) + 1) * sizeof(char));
+	if (home && !strncmp(env->pwd, home, strlen(home))) {
+		// the first part of the path is the home folder
+		strcpy(path, "~\0");
+		strcat(path, env->pwd + strlen(home));
+	} else {
+		// fall back to full path if the $HOME variable is unset
+		strcpy(path, env->pwd);
+	}
+
+	if (user) {
+		// TODO: Use ~ for the pwd
+		result = asprintf(&prompt, "[%s: slush] %s ", user, path);
+	} else {
+		strcpy(prompt, "[slush] \0");
+		result = asprintf(&prompt, "[slush] %s ", path);
+	}
+
+	if (result == -1) {
+		fprintf(stderr, "\033[91m[slush: error] Could not allocate memory for prompt!\033[0m\n");
+		free(path);
+		return NULL;
+	}
+
+	free(path);
+	return prompt;
+}
+
 int main(void) {
 	printf("Welcome to slush - the stupid & lightly underwhelming shell!\n");
 
@@ -70,21 +104,7 @@ int main(void) {
 		check_bg_jobs(env, false);
 
 		// build command line string
-		char* prompt = NULL;
-		int result = 0;
-		char* user = getenv("USER");
-		if (user) {
-			// TODO: Use ~ for the pwd
-			result = asprintf(&prompt, "[%s: slush] %s ", user, env->pwd);
-		} else {
-			strcpy(prompt, "[slush] \0");
-			result = asprintf(&prompt, "[slush] %s ", env->pwd);
-		}
-
-		if (result == -1) {
-			fprintf(stderr, "\033[91m[slush: error] Could not allocate memory for prompt!\033[0m\n");
-			return 1;
-		}
+		char* prompt = build_prompt(env);
 
 		// get input
 		input = readline(prompt);
