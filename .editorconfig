@@ -1,0 +1,10 @@
+root = true
+
+[*.c]
+indent_style = tab
+
+[*.h]
+indent_style = tab
+
+[Makefile]
+indent_style = tab
