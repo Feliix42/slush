@@ -1,7 +1,40 @@
 #include <jobs.h>
 
-/// Checks state of all background tasks and reports whether they are done processing.
-void check_bg_jobs(struct environment* env) {
+bool prompt_and_terminate_jobs(struct environment* env) {
+	// we're done when there are no background jobs
+	if (!env->bg_jobs) {
+		return true;
+	}
+
+	// prompt user
+	printf("  There are background jobs running. Exit anyway? [y/N] ");
+	char* response = calloc(2, sizeof(char));
+
+	// fgets returns NULL when no input is provided
+	if (fgets(response, 2, stdin) && (response[0] == 'y' || response[0] == 'Y')) {
+		// kill all jobs & exit
+		struct running_job* cur = env->bg_jobs;
+
+		// send a KILL signal to all jobs
+		while (cur != NULL) {
+			kill(cur->job, SIGKILL);
+			cur = cur->next;
+		}
+		check_bg_jobs(env, true);
+
+		// all bg jobs should be gone now. If not, this is an error.
+		if (env->bg_jobs) {
+			fprintf(stderr, "\033[91m[slush: error] Not all jobs terminated correctly.\033[0m\n");
+		}
+		free(response);
+		return true;
+	} else {
+		free(response);
+		return false;
+	}
+}
+
+void check_bg_jobs(struct environment* env, bool force_termination) {
 	// TODO: better job handling that also reports other state changes
 	// skip when job queue is empty
 	if (!env->bg_jobs)
@@ -14,7 +47,12 @@ void check_bg_jobs(struct environment* env) {
 	while (cur != NULL) {
 		// non-parallel builtins are automatically done
 		if (cur->job != -2) {
-			pid_t res = waitpid(cur->job, 0, WNOHANG);
+			pid_t res;
+			if (force_termination) {
+				res = waitpid(cur->job, 0, 0);
+			} else {
+				res = waitpid(cur->job, 0, WNOHANG);
+			}
 
 			if (res == 0) {
 				prev = cur;
@@ -30,7 +68,9 @@ void check_bg_jobs(struct environment* env) {
 			}
 
 			// when control reaches this point, PID did return
-			printf("[slush: info] Job with PID %d has ended.\n", res);
+			if (!force_termination) {
+				printf("[slush: info] Job with PID %d has ended.\n", res);
+			}
 		}
 
 		if (cur->associated) {
@@ -63,7 +103,6 @@ void check_bg_jobs(struct environment* env) {
 	}
 }
 
-/// Appends the PID of a background job to the `jobs` array of the environment.
 void append_job(struct environment* env, pid_t new_pid, pid_t* associated) {
 	// build the new list item
 	struct running_job* jbs = calloc(1, sizeof(struct running_job));

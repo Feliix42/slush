@@ -67,7 +67,7 @@ int main(void) {
 
 	while (true) {
 		// check status of any background tasks
-		check_bg_jobs(env);
+		check_bg_jobs(env, false);
 
 		// build command line string
 		char* prompt = NULL;
@@ -98,9 +98,11 @@ int main(void) {
 			continue;
 
 		if (!cmd->invocation) {
-			// exit condition
-			deinitialize_cmd(cmd);
-			break;
+			// exit condition -> ask if all running jobs should be terminated
+			if (prompt_and_terminate_jobs(env)) {
+				deinitialize_cmd(cmd);
+				break;
+			}
 		}
 
 		// add history entry
@@ -125,6 +127,6 @@ int main(void) {
 
 	deinitialize_env(env);
 
-	printf("exit\n");
+	puts("Bye!");
 	return 0;
 }
