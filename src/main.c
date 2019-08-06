@@ -112,6 +112,9 @@ int main(void) {
 		if (!input)
 			break;
 
+		char* orig_input = strdup(input);
+		input = apply_aliases(env, input);
+
 		struct command* cmd = parse_command(input);
 
 		if (!cmd)
@@ -121,18 +124,21 @@ int main(void) {
 			// exit condition -> ask if all running jobs should be terminated
 			if (prompt_and_terminate_jobs(env)) {
 				deinitialize_cmd(cmd);
+				free(input);
+				free(prompt);
 				break;
 			}
 		}
 
 		// add history entry
-		add_history(input);
+		add_history(orig_input);
 
 		// TODO: Match return value of command
 		execute(cmd, env);
 
 		// last step: freeing any allocated memory
 		deinitialize_cmd(cmd);
+		free(orig_input);
 		free(input);
 		free(prompt);
 	}

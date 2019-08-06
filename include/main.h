@@ -17,5 +17,6 @@
 #include <handler.h>
 #include <environment.h>
 #include <jobs.h>
+#include <builtins/alias.h>
 
 #endif
