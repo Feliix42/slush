@@ -49,17 +49,17 @@ void kill_process(int argc, char** args) {
 	//  - later add signal names etc
 }
 
-void list_jobs(struct environment* env) {
+void list_jobs(struct environment* env, FILE* output) {
 	if (!env || !env->bg_jobs) {
-		puts("There are no running jobs.");
+		fprintf(output, "There are no running jobs.\n");
 		return;
 	}
 
 	// iterate over all background jobs, print PID list
-	puts("Active jobs:\n");
+	fprintf(output, "Active jobs:\n\n");
 	for (struct running_job* cur = env->bg_jobs; cur != NULL; cur = cur->next) {
 		if (cur->job != -2) {
-			printf("  %d\n", cur->job);
+			fprintf(output, "  %d\n", cur->job);
 		}
 	}
 }

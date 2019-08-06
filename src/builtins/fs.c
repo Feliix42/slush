@@ -59,6 +59,6 @@ void change_dir(struct environment* env, char* target) {
 	free(new_dir);
 }
 
-void pwd(struct environment* env) {
-	printf("%s\n", env->pwd);
+void pwd(struct environment* env, FILE* output) {
+	fprintf(output, "%s\n", env->pwd);
 }

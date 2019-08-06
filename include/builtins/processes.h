@@ -18,6 +18,6 @@
 void kill_process(int argc, char** args);
 
 /// Slush builtin: Print a list of all running jobs in the current shell.
-void list_jobs(struct environment* env);
+void list_jobs(struct environment* env, FILE* output);
 
 #endif /* __BUILTINS_PROCESSES_H__ */

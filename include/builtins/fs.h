@@ -11,6 +11,6 @@
 #include <environment.h>
 
 void change_dir(struct environment* env, char* target);
-void pwd(struct environment* env);
+void pwd(struct environment* env, FILE* output);
 
 #endif /* __BUILTINS_FS_H__ */
