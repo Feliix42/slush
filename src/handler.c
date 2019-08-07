@@ -75,7 +75,7 @@ pid_t handle_command(struct program* invoc, struct environment* env, int in[2], 
 	return 0;
 }
 
-int execute(struct command* cmd, struct environment* env) {
+int execute(struct command* cmd, struct environment* env, char* original_invocation) {
 	if (!cmd->invocation) {
 		return 1;
 	}
@@ -157,7 +157,8 @@ int execute(struct command* cmd, struct environment* env) {
 
 	// either wait or do background processing
 	if (cmd->background) {
-		append_job(env, lead, associated_jobs);
+		char* orig = strdup(original_invocation);
+		append_job(env, lead, associated_jobs, orig);
 	} else {
 		if (lead != -2) {
 			waitpid(lead, 0, 0);

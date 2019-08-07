@@ -15,6 +15,8 @@ struct running_job {
 	pid_t job;
 	/// `-1`-terminated list of associated jobs from the pipe chain
 	pid_t* associated;
+	/// the command that was used to invoke the command
+	char* cmd;
 	/// Link to the next element
 	struct running_job* next;
 };

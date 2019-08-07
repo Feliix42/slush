@@ -23,7 +23,7 @@ bool prompt_and_terminate_jobs(struct environment* env);
 void check_bg_jobs(struct environment* env, bool force_termination);
 
 /// Appends the PID of a background job to the `jobs` array of the environment.
-void append_job(struct environment* env, pid_t new_pid, pid_t* associated);
+void append_job(struct environment* env, pid_t new_pid, pid_t* associated, char* invocation);
 
 
 #endif /* __JOBS_H__ */

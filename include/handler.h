@@ -17,6 +17,6 @@
 #include <environment.h>
 #include <jobs.h>
 
-int execute(struct command* cmd, struct environment* env);
+int execute(struct command* cmd, struct environment* env, char* original_invocation);
 
 #endif

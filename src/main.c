@@ -134,7 +134,7 @@ int main(void) {
 		add_history(orig_input);
 
 		// TODO: Match return value of command
-		execute(cmd, env);
+		execute(cmd, env, orig_input);
 
 		// last step: freeing any allocated memory
 		deinitialize_cmd(cmd);

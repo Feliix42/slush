@@ -99,11 +99,14 @@ void check_bg_jobs(struct environment* env, bool force_termination) {
 			prev->next = cur->next;
 			cur = cur->next;
 		}
+		if (tmp->cmd) {
+			free(tmp->cmd);
+		}
 		free(tmp);
 	}
 }
 
-void append_job(struct environment* env, pid_t new_pid, pid_t* associated) {
+void append_job(struct environment* env, pid_t new_pid, pid_t* associated, char* invocation) {
 	// build the new list item
 	struct running_job* jbs = calloc(1, sizeof(struct running_job));
 	if (!jbs) {
@@ -115,6 +118,7 @@ void append_job(struct environment* env, pid_t new_pid, pid_t* associated) {
 	if (associated) {
 		jbs->associated = associated;
 	}
+	jbs->cmd = invocation;
 
 	// link into list
 	if (!env->bg_jobs) {

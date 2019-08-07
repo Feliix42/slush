@@ -53,9 +53,14 @@ void list_jobs(struct environment* env, FILE* output) {
 
 	// iterate over all background jobs, print PID list
 	fprintf(output, "Active jobs:\n\n");
+	fprintf(output, "  Process group\tCommand\n");
 	for (struct running_job* cur = env->bg_jobs; cur != NULL; cur = cur->next) {
 		if (cur->job != -2) {
-			fprintf(output, "  %d\n", cur->job);
+			if (cur->cmd) {
+				fprintf(output, "  %d\t\t%s\n", cur->job, cur->cmd);
+			} else {
+				fprintf(output, "  %d\n", cur->job);
+			}
 		}
 	}
 }
