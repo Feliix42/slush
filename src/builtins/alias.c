@@ -61,7 +61,7 @@ void unalias(struct environment* env, int argc, char** argv) {
 
 	if (argc < 2) {
 		fprintf(stderr, "unalias: Insufficient number of arguments!\n"
-		"Usage: unalias [alias [...]]\n");
+		"Usage: unalias <alias [...]>\n");
 	}
 
 	for (int i = 1; i < argc; i++) {

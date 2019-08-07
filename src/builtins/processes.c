@@ -26,10 +26,6 @@ void kill_process(int argc, char** args) {
 		// more than 3 arguments make no sense
 		fprintf(stderr, "kill: Too many arguments!\n"
 			"Usage: kill [-<signum>] pid\n");
-		fprintf(stderr, "[DEBUG] Argument count: %d\n", argc);
-		for (int i = 0; i < argc; i++) {
-			fprintf(stderr, "arg %d: %s", i, args[i]);
-		}
 		return;
 	}
 

@@ -13,8 +13,17 @@ enum builtin {
 
 /// Prints the help for builtins.
 void print_builtins_help(FILE* output) {
-	// TODO: Write help
-	fprintf(output, "TODO\n");
+	fprintf(output, "\033[1mBuiltins Help\033[0m\n"
+		"  cd [path]                 Change the present working directory and move to the directory\n"
+		"                            provided as argument. If no argument is provided, cd changes\n"
+		"                            into the home directory.\n"
+		"  pwd                       Prints the present working directory.\n"
+		"  kill [-<signum>] <pid>    Sends a signal to the process identified by `pid`. If no signal\n"
+		"                            number is provided, SIGTERM is sent.\n"
+		"  alias <name> <command>    Defines an alias that replaces `name` with `command` when used.\n"
+		"  unalias <alias [...]>     Removes one or more previously defined aliases.\n"
+		"  jobs                      Prints a list of currently running jobs.\n"
+		"  help                      Prints this help.\n");
 }
 
 enum builtin match_invoc(char* program_name) {
