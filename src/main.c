@@ -89,7 +89,10 @@ int main(void) {
 	using_history();
 	// load old history
 	char* hist_file;
-	asprintf(&hist_file, "%s/.slush_history", getenv("HOME"));
+	if (asprintf(&hist_file, "%s/.slush_history", getenv("HOME")) == -1) {
+		fprintf(stderr, "\033[91m[slush: error] Could not allocate memory for prompt!\033[0m\n");
+	}
+
 	if (read_history(hist_file) == ENOENT) {
 		int fd = open(hist_file, O_CREAT, S_IRUSR & S_IWUSR);
 		if (fd != -1) {
