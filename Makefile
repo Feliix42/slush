@@ -53,6 +53,5 @@ release: CFLAGS += -O2
 release: all
 
 clean:
-	-@rm -rvf $(OBJ_DIR)/*
-	-@rm -rvf $(APP_DIR)/*
+	-@rm -rvf $(BUILD)
 	-@rm -rvf src/{scanner.c,parser.c} include/{scanner.h,parser.h}
