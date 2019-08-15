@@ -115,6 +115,13 @@ int main(void) {
 		if (!input)
 			break;
 
+		// skip empty inputs
+		if (strlen(input) == 0 || (strspn(input, " ") == strlen(input))) {
+			free(prompt);
+			free(input);
+			continue;
+		}
+
 		char* orig_input = strdup(input);
 		input = apply_aliases(env, input);
 
