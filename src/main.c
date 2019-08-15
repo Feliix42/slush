@@ -155,6 +155,8 @@ int main(void) {
 	history_truncate_file(hist_file, 10000);
 
 	deinitialize_env(env);
+	free(hist_file);
+
 
 	puts("Bye!");
 	return 0;

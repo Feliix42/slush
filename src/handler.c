@@ -53,10 +53,14 @@ pid_t handle_command(struct program* invoc, struct environment* env, int in[2], 
 		}
 
 		// close unnecessary file descriptors
-		close(in[0]);
-		close(in[1]);
-		close(out[0]);
-		close(out[1]);
+		if (in[0] != -1)
+			close(in[0]);
+		if (in[1] != -1)
+			close(in[1]);
+		if (out[0] != -1)
+			close(out[0]);
+		if (out[1] != -1)
+			close(out[1]);
 
 		// run execve to start the program
 		if (execve(prog, invoc->args, environ) == -1) {
@@ -139,8 +143,10 @@ int execute(struct command* cmd, struct environment* env, char* original_invocat
 		}
 
 		// at last, close unnecessary file descriptors
-		close(pipein[0]);
-		close(pipeout[1]);
+		if (pipein[0] != -1)
+			close(pipein[0]);
+		if (pipeout[1] != -1)
+			close(pipeout[1]);
 		pipeout[1] = -1;
 	}
 
