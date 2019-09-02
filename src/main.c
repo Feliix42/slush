@@ -112,8 +112,10 @@ int main(void) {
 		// get input
 		input = readline(prompt);
 
-		if (!input)
+		if (!input) {
+			free(prompt);
 			break;
+		}
 
 		// skip empty inputs
 		if (strlen(input) == 0 || (strspn(input, " ") == strlen(input))) {
@@ -127,13 +129,18 @@ int main(void) {
 
 		struct command* cmd = parse_command(input);
 
-		if (!cmd)
+		if (!cmd) {
+			free(orig_input);
+			free(input);
+			free(prompt);
 			continue;
+		}
 
 		if (!cmd->invocation) {
 			// exit condition -> ask if all running jobs should be terminated
 			if (prompt_and_terminate_jobs(env)) {
 				deinitialize_cmd(cmd);
+				free(orig_input);
 				free(input);
 				free(prompt);
 				break;

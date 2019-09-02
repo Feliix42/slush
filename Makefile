@@ -46,8 +46,11 @@ build:
 	@mkdir -p $(APP_DIR)
 	@mkdir -p $(OBJ_DIR)
 
-debug: CFLAGS += -DDEBUG -g -fsanitize=address
+debug: CFLAGS += -DDEBUG -g
 debug: all
+
+sanitize: CFLAGS += -DDEBUG -g -fsanitize=address
+sanitize: all
 
 release: CFLAGS += -O2
 release: all
